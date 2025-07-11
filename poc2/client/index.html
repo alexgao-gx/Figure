@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>POC 2 Client</title>
+  <script src="https://cdn.jsdelivr.net/npm/keycloak-js@23/dist/keycloak.min.js"></script>
+</head>
+<body>
+  <h1>POC 2 Frontend</h1>
+  <button id="login">Login</button>
+  <pre id="output"></pre>
+  <script>
+    const keycloak = new Keycloak({
+      url: 'http://localhost:8080',
+      realm: 'demo',
+      clientId: 'frontend'
+    });
+    document.getElementById('login').onclick = () => {
+      keycloak.init({ onLoad: 'login-required' }).then(() => {
+        fetch('http://localhost:3002/admin/dashboard', {
+          headers: { Authorization: 'Bearer ' + keycloak.token }
+        })
+          .then(r => r.json())
+          .then(data => {
+            document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+          });
+      });
+    };
+  </script>
+</body>
+</html>
